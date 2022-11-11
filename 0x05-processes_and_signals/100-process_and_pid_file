@@ -1,30 +1,11 @@
 #!/usr/bin/env bash
-#
-# To infinity and beyond...
-# Write PID to pidfile (default '/var/run/holbertonscript.pid')
-# Remove pidfile and exit upon receiving SIGTERM or SIGQUIT
-
-sleep() {
-	! read -rt "$1"
-} <> <(:)
-
-echo "$$" >| "${pidfile:=/var/run/holbertonscript.pid}"
-
-trap '
-  echo "Y U no love me?!"
- ' INT
- trap '
-   rm -f "${pidfile}" 2>/dev/null
-   exit 131
- ' QUIT
- trap '
-   echo "I hate the kill command"
-   rm -f "${pidfile}" 2>/dev/null
-   exit 143
- ' TERM
-
- while true
- do
-	 echo 'To infinity and beyond'
-	 sleep 2
-done
+# traps signals and creates a file containing its pid
+i=0
+echo $BASHPID > /var/run/holbertonscript.pid
+trap 'echo "I hate the kill command"; rm /var/run/holbertonscript.pid; exit 0;' SIGTERM
+trap 'echo "Y U no love me?!"' SIGINT
+trap 'rm /var/run/holbertonscript.pid; exit 0;' SIGQUIT
+while [ $i ]; do
+	echo 'To infinity and beyond'
+	sleep 2
+done;
